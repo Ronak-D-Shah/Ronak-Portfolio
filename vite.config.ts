@@ -9,19 +9,10 @@ export default defineConfig({
     port: 8080,
   },
   plugins: [react()],
+  base: '/Ronak-Portfolio/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
 });
-
-
-// // vite.config.ts or vite.config.js
-// import { defineConfig } from 'vite';
-// import react from '@vitejs/plugin-react';
-
-// export default defineConfig({
-//   plugins: [react()],
-//   base: '/your-repo-name/', // 👈 replace with actual repo name
-// });
