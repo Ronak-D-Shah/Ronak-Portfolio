@@ -57,7 +57,7 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="#home">
+          <a href="/">
             <div className="text-xl font-bold gradient-text">
               Ronak Shah
             </div>
