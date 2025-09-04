@@ -163,6 +163,9 @@ All colors MUST be HSL.
   /* Alternating section backgrounds */
   .section-1 { background-color: hsl(var(--section-1)); }
   .section-2 { background-color: hsl(var(--section-2)); }
+  /* Ensure all cards/components stay brighter than section bg */
+  .section-1 .bg-card, .section-2 .bg-card { background-color: hsl(var(--card)); }
+  .section-1 .bg-secondary, .section-2 .bg-secondary { background-color: hsl(var(--secondary)); }
 
   /* Button microinteractions */
   .btn-micro {

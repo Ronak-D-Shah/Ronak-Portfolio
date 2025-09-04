@@ -8,40 +8,20 @@ import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { Footer } from '@/components/Footer';
 import { ScrollToTop } from '@/components/ScrollToTop';
-import { SectionWave } from '@/components/SectionWave';
+ 
 
 export default function Portfolio() {
   return (
     <div className="min-h-screen">
       <Navigation />
       <main>
-        <div className="section-1">
-          <HeroSection />
-        </div>
-        <SectionWave />
-        <div className="section-2">
-          <AboutSection />
-        </div>
-        <SectionWave flip />
-        <div className="section-1">
-          <SkillsSection />
-        </div>
-        <SectionWave />
-        <div className="section-2">
-          <EducationSection />
-        </div>
-        <SectionWave flip />
-        <div className="section-1">
-          <ExperienceSection />
-        </div>
-        <SectionWave />
-        <div className="section-2">
-          <ProjectsSection />
-        </div>
-        <SectionWave flip />
-        <div className="section-1">
-          <ContactSection />
-        </div>
+        <div className="section-1"><HeroSection /></div>
+        <div className="section-2"><AboutSection /></div>
+        <div className="section-1"><SkillsSection /></div>
+        <div className="section-2"><EducationSection /></div>
+        <div className="section-1"><ExperienceSection /></div>
+        <div className="section-2"><ProjectsSection /></div>
+        <div className="section-1"><ContactSection /></div>
       </main>
       <Footer />
       <ScrollToTop />
