@@ -1,6 +1,9 @@
 import { GraduationCap, Calendar, MapPin, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useEffect, useRef } from 'react';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { usePrefersReducedMotion } from '@/hooks/use-reduced-motion';
 
 const education = [
   {
@@ -44,8 +47,35 @@ const education = [
 ];
 
 export function EducationSection() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLDivElement>('.education-card');
+      cards.forEach((card) => {
+        gsap.fromTo(
+          card,
+          { autoAlpha: 0, y: 24 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 85%' } as ScrollTrigger.Vars
+          }
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
   return (
-    <section id="education" className="py-20">
+    <section ref={sectionRef} id="education" className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
@@ -57,21 +87,17 @@ export function EducationSection() {
         </div>
 
         <div className="max-w-5xl mx-auto">
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-4 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-primary"></div>
+          <div>
 
             {education.map((edu, index) => (
               <div 
                 key={edu.degree}
-                className="relative mb-12"
+                className="mb-12"
               >
-                {/* Timeline dot */}
-                <div className="absolute left-4 md:left-8 w-4 h-4 bg-primary rounded-full transform -translate-x-1/2 border-4 border-background shadow-glow z-10"></div>
 
                 {/* Content */}
                 <Card 
-                  className="ml-12 md:ml-20 bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500 hover:-translate-y-1 group"
+                  className="education-card bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500 hover:-translate-y-1 group"
                   style={{
                     animationDelay: `${index * 300}ms`
                   }}

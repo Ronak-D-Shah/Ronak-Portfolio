@@ -1,5 +1,8 @@
 import { Code2, Lightbulb, Users, Rocket } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useEffect, useRef } from 'react';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { usePrefersReducedMotion } from '@/hooks/use-reduced-motion';
 
 const highlights = [
   {
@@ -25,8 +28,34 @@ const highlights = [
 ];
 
 export function AboutSection() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        sectionRef.current?.querySelector('.about-story'),
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 85%' } as ScrollTrigger.Vars }
+      );
+
+      const highlightCards = gsap.utils.toArray<HTMLDivElement>('.about-highlight');
+      highlightCards.forEach((el) => {
+        gsap.fromTo(el, { autoAlpha: 0, y: 20 }, {
+          autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 90%' } as ScrollTrigger.Vars
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
   return (
-    <section id="about" className="py-20 relative">
+    <section ref={sectionRef} id="about" className="py-20 relative">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
@@ -39,7 +68,7 @@ export function AboutSection() {
 
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
           {/* Story */}
-          <div className="space-y-6 animate-slide-in-left">
+          <div className="about-story space-y-6">
             <h3 className="text-2xl font-semibold text-primary">My Journey</h3>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
@@ -55,7 +84,7 @@ export function AboutSection() {
           </div>
 
           {/* Quick Facts */}
-          <div className="animate-slide-in-right">
+          <div>
             <Card className="bg-card/50 border-border/50 shadow-card">
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-6 text-center">Quick Facts</h3>
@@ -95,7 +124,7 @@ export function AboutSection() {
           {highlights.map((highlight, index) => (
             <Card 
               key={highlight.title}
-              className="group bg-card/50 border-border/50 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
+              className="about-highlight group bg-card/50 border-border/50 hover:shadow-glow transition-all duration-300 hover:-translate-y-1"
               style={{
                 animationDelay: `${index * 200}ms`
               }}

@@ -2,6 +2,9 @@ import { ExternalLink, Github, Calendar, Users, Zap, Database, Globe } from 'luc
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from 'react';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { usePrefersReducedMotion } from '@/hooks/use-reduced-motion';
 
 const projects = [
   {
@@ -84,8 +87,32 @@ const projects = [
 ];
 
 export function ProjectsSection() {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLDivElement>('.project-card');
+      cards.forEach((card) => {
+        gsap.fromTo(card, { autoAlpha: 0, y: 24 }, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: card, start: 'top 90%' } as ScrollTrigger.Vars
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
   return (
-    <section id="projects" className="py-20">
+    <section ref={sectionRef} id="projects" className="py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
@@ -96,14 +123,31 @@ export function ProjectsSection() {
           </p>
         </div>
 
-        <div className="grid gap-8 max-w-6xl mx-auto">
+        <div className="grid gap-8 max-w-6xl mx-auto transition-all">
           {projects.map((project, index) => (
             <Card
               key={project.title}
-              className={`group bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500 hover:-translate-y-2 ${project.featured ? 'ring-2 ring-primary/20' : ''
+              className={`project-card group bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500 hover:-translate-y-2 ${project.featured ? 'ring-2 ring-primary/20' : ''
                 }`}
               style={{
-                animationDelay: `${index * 200}ms`
+                animationDelay: `${index * 200}ms`,
+                ...(hovered !== null && hovered !== index
+                  ? { filter: 'blur(1px) saturate(0.9)', opacity: 0.6, transform: 'scale(0.98)' }
+                  : (hovered === index ? { filter: 'brightness(1.05)' } : {}))
+              }}
+              onMouseMove={(e) => {
+                const target = e.currentTarget as HTMLDivElement;
+                const rect = target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rotateY = ((x / rect.width) - 0.5) * 10;
+                const rotateX = ((y / rect.height) - 0.5) * -10;
+                gsap.to(target, { rotateY, rotateX, transformPerspective: 800, transformOrigin: 'center', duration: 0.3, ease: 'power2.out' });
+              }}
+              onMouseEnter={() => setHovered(index)}
+              onMouseLeave={(e) => {
+                setHovered(null);
+                gsap.to(e.currentTarget, { rotateY: 0, rotateX: 0, duration: 0.4, ease: 'power3.out' });
               }}
             >
               <CardHeader className="pb-4">
@@ -214,7 +258,18 @@ export function ProjectsSection() {
         {/* Publication */}
         <div className="mt-16 max-w-4xl mx-auto animate-fade-in">
           <h3 className="text-2xl font-semibold text-center mb-8">Research Publication</h3>
-          <Card className="bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500">
+          <Card className="bg-card/80 border-border/50 hover:shadow-glow transition-all duration-500"
+            onMouseMove={(e) => {
+              const target = e.currentTarget as HTMLDivElement;
+              const rect = target.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              const rotateY = ((x / rect.width) - 0.5) * 6;
+              const rotateX = ((y / rect.height) - 0.5) * -6;
+              gsap.to(target, { rotateY, rotateX, transformPerspective: 800, transformOrigin: 'center', duration: 0.25, ease: 'power2.out' });
+            }}
+            onMouseLeave={(e) => gsap.to(e.currentTarget, { rotateY: 0, rotateX: 0, duration: 0.4, ease: 'power3.out' })}
+          >
             <CardContent className="p-8">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">

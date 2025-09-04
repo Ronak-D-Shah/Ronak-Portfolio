@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
 :root {
-    --background: 0 0% 100%;
+    --background: 210 20% 96%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -21,10 +21,10 @@ All colors MUST be HSL.
     --primary-foreground: 210 40% 98%;
     --primary-glow: 221.2 83.2% 63.3%;
 
-    --secondary: 210 40% 96%;
+    --secondary: 210 30% 94%;
     --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 210 40% 96%;
+    --muted: 210 25% 93%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --accent: 262.1 83.3% 57.8%;
@@ -33,8 +33,8 @@ All colors MUST be HSL.
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
     --ring: 221.2 83.2% 53.3%;
 
     /* Custom design tokens */
@@ -44,6 +44,9 @@ All colors MUST be HSL.
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Section backgrounds (light) */
+    --section-1: 210 22% 97%;
+    --section-2: 210 18% 93%;
 
     --radius: 0.5rem;
 
@@ -58,10 +61,10 @@ All colors MUST be HSL.
   }
 
 .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 84% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 32.6% 12%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
@@ -71,10 +74,10 @@ All colors MUST be HSL.
     --primary-foreground: 222.2 84% 4.9%;
     --primary-glow: 217.2 91.2% 69.8%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217.2 25% 16%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217.2 25% 16%;
     --muted-foreground: 215 20.2% 65.1%;
 
     --accent: 262.1 83.3% 57.8%;
@@ -83,8 +86,8 @@ All colors MUST be HSL.
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217.2 25% 20%;
+    --input: 217.2 25% 20%;
     --ring: 224.3 76.3% 94.1%;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
@@ -93,6 +96,9 @@ All colors MUST be HSL.
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.3);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Section backgrounds (dark) */
+    --section-1: 222.2 32% 10.5%;
+    --section-2: 222.2 28% 8.5%;
   }
 }
 
@@ -152,6 +158,41 @@ All colors MUST be HSL.
   /* Glow effect */
   .glow {
     box-shadow: var(--shadow-glow);
+  }
+
+  /* Alternating section backgrounds */
+  .section-1 { background-color: hsl(var(--section-1)); }
+  .section-2 { background-color: hsl(var(--section-2)); }
+
+  /* Button microinteractions */
+  .btn-micro {
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .btn-micro:hover {
+    transform: translateY(-1px) scale(1.02);
+  }
+  .btn-micro:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Shine effect overlay */
+  .btn-micro {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-micro::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(120deg, transparent 0%, hsla(0,0%,100%,0.25) 50%, transparent 100%);
+    transform: skewX(-20deg);
+  }
+  .btn-micro:hover::after {
+    transition: left 700ms ease;
+    left: 150%;
   }
 
   /* Floating animation */

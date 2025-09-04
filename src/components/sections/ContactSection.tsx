@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Mail, Phone, MapPin, Send, Github, Linkedin, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { usePrefersReducedMotion } from '@/hooks/use-reduced-motion';
 
 const contactInfo = [
   {
@@ -51,6 +53,37 @@ export function ContactSection() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const columns = gsap.utils.toArray<HTMLDivElement>('.contact-col');
+      columns.forEach((col) => {
+        gsap.fromTo(col, { autoAlpha: 0, y: 24 }, {
+          autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out',
+          scrollTrigger: { trigger: col, start: 'top 90%' } as ScrollTrigger.Vars
+        });
+      });
+
+      const cta = sectionRef.current?.querySelector('.contact-cta');
+      if (cta) {
+        gsap.fromTo(cta, { scale: 1 }, {
+          scale: 1.02,
+          transformOrigin: 'center',
+          repeat: -1,
+          yoyo: true,
+          duration: 1.8,
+          ease: 'sine.inOut'
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
@@ -97,7 +130,7 @@ export function ContactSection() {
   };  
 
   return (
-    <section id="contact" className="py-20 bg-muted/20">
+    <section ref={sectionRef} id="contact" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl lg:text-5xl font-bold mb-4">
@@ -110,7 +143,7 @@ export function ContactSection() {
 
         <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
           {/* Contact Information */}
-          <div className="lg:col-span-1 space-y-8 animate-slide-in-left">
+          <div className="contact-col lg:col-span-1 space-y-8">
             <Card className="bg-card/80 border-border/50 shadow-card">
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-6">Contact Information</h3>
@@ -162,7 +195,7 @@ export function ContactSection() {
             </Card>
 
             {/* CTA */}
-            <div className="text-center space-y-4 p-6 rounded-lg bg-gradient-primary">
+            <div className="contact-cta text-center space-y-4 p-6 rounded-lg bg-gradient-primary">
               <h4 className="text-lg font-semibold text-primary-foreground">
                 Looking for a Software Engineer?
               </h4>
@@ -184,7 +217,7 @@ export function ContactSection() {
           </div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-2 animate-slide-in-right">
+          <div className="contact-col lg:col-span-2">
             <Card className="bg-card/80 border-border/50 shadow-card">
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-6">Send a Message</h3>
@@ -201,7 +234,7 @@ export function ContactSection() {
                         onChange={handleChange}
                         placeholder="Your full name"
                         required
-                        className="bg-background/50"
+                        className="bg-background/50 focus:ring-2 focus:ring-primary/30"
                       />
                     </div>
                     <div className="space-y-2">
@@ -216,7 +249,7 @@ export function ContactSection() {
                         onChange={handleChange}
                         placeholder="your.email@example.com"
                         required
-                        className="bg-background/50"
+                        className="bg-background/50 focus:ring-2 focus:ring-primary/30"
                       />
                     </div>
                   </div>
@@ -232,7 +265,7 @@ export function ContactSection() {
                       onChange={handleChange}
                       placeholder="What's this about?"
                       required
-                      className="bg-background/50"
+                      className="bg-background/50 focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
                   
@@ -248,7 +281,7 @@ export function ContactSection() {
                       placeholder="Tell me about your project or opportunity..."
                       rows={6}
                       required
-                      className="bg-background/50 resize-none"
+                      className="bg-background/50 resize-none focus:ring-2 focus:ring-primary/30"
                     />
                   </div>
 

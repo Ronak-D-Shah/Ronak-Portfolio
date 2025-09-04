@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Menu, X, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { gsap } from '@/lib/gsap';
+import { usePrefersReducedMotion } from '@/hooks/use-reduced-motion';
 
 const navItems = [
   { name: 'Home', href: '#home' },
@@ -17,6 +19,8 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const navRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +46,18 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        navRef.current,
+        { y: -50, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power3.out' }
+      );
+    });
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
   const scrollToSection = (href: string) => {
     const element = document.getElementById(href.substring(1));
     if (element) {
@@ -51,7 +67,7 @@ export function Navigation() {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+    <nav ref={navRef} className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled ? 'bg-background/80 backdrop-blur-md border-b border-border shadow-sm' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4">
